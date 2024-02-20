@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chack Box</title>
+</head>
+<body>
+    <div class="chkWrap">
+        <input type="checkbox" id="checkAll">전체</input>
+        <input type="checkbox" class="checkItem">클릭</input>
+        <input type="checkbox" class="checkItem">클릭</input>
+    </div>
+<script>
+document.getElementById('checkAll').addEventListener('change', function() {
+    // 'checkAll' 체크박스의 상태를 가져옵니다.
+    const isChecked = this.checked;
+
+    // 모든 'checkItem' 체크박스를 찾아서 각각의 상태를 'checkAll'과 동일하게 설정합니다.
+    document.querySelectorAll('.chkWrap .checkItem').forEach(function(checkbox) {
+        checkbox.checked = isChecked;
+    });
+});
+</script>
+</body>
+
+</html>
