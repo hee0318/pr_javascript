@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filter</title>
+</head>
+<body>
+    <script>
+        // 합집합
+        const first = new Set([1, 2, 3, 4, 4, 2]);
+        const second = new Set([1, 3, 5, 1]);
+
+        const union = [...new Set([...first,...second])]
+        console.log(union)
+
+        // 교집합
+        const intersection = [...first].filter(data => second.has(data))
+        console.log(intersection)
+
+        // 차집합
+        const difrent = [...first].filter(data => !second.has(data))
+        console.log(difrent)
+    </script>
+</body>
+</html>

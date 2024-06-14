@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link  href="./ui.css" rel="stylesheet">
+    <title>ui</title>
+</head>
+<body>
+    <div class="boxWrap">
+        <ul>
+            <li>
+                <a>오늘</a>
+            </li>
+            <li>
+                <a>내일</a>
+            </li>
+            <li>
+                <a>주말</a>
+            </li>
+        </ul>
+    </div>
+</body>
+<script>
+        const boxWrap = document.querySelector(".boxWrap");
+        boxWrap.addEventListener("click", function(e) {
+            if (e.target.tagName === 'A') {
+                document.querySelectorAll('.boxWrap li').forEach(function(li) {
+                    li.classList.remove('active');
+                });
+                e.target.parentNode.classList.add('active');
+            }
+        });
+</script>
+</html>

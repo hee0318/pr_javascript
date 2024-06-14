@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>session</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+        .content {
+            height: 2000px;
+        }   
+    </style>    
+
+    
+    <button id="dataSave">저장하기</button>
+    <button id="dataGet">불러오기</button>
+
+    <div id="dataDisplay"></div>
+
+    <div class="content">스크롤해서 아래로 이동해보세요.</div>
+</head>
+<body>
+<script>
+    const dataSave = document.querySelector("#dataSave");
+    const dataGet = document.querySelector("#dataGet");
+    const dataDisplay = document.querySelector("#dataDisplay");
+
+    dataSave.addEventListener("click", function(){
+        sessionStorage.setItem("keykey", "값값")
+        console.log("저장클리어");
+
+        dataDisplay.textContent = "로컬에 저장했는데"
+    })
+
+    dataGet.addEventListener("click", function(){
+       const data = sessionStorage.getItem("keykey")
+       
+       dataDisplay.textContent = `불러왔는데 : ${data}`
+    })
+
+    // 스크롤 원래상태 복원
+    window.onload = function(){
+        if(sessionStorage.scrollPosition){
+            window.scrollTo(0, sessionStorage.scrollPosition);
+        }
+    }
+
+    // 스크롤 
+    window.onscroll = function(){
+        sessionStorage.scrollPosition = window.scrollY || document.documentElement.scrollTop;
+    }
+</script>
+</body>
+</html>

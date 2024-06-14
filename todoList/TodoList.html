@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    
+    <title>Todo-VanilaJS</title>
+</head>
+<body>
+    <header id="headeWrap">
+        <button class="darkMode"><span>🌙</span></button>
+    </header>
+    <div class="todo-wrapper">
+        <div class="todo-title">🙋🏼‍♀️ 투두리스트!</div>
+        <div class="todo-box">
+
+            <div class="todo-input-box">
+                <button class="complete-all-btn">✔</button>
+                <input type="text" class="todo-input" placeholder="해야 할 일을 입력해주세요.">
+            </div>
+            
+            <ul class="todo-list">
+            <li class="todo-item checked">
+            </ul>
+            <div class="todo-bottom">
+                <div class="left-items">3 items left</div>
+                <div class="button-group">
+                    <button class="show-all-btn selected" data-type="all">All</button>
+                    <button class="show-active-btn" data-type="active">Active</button>
+                    <button class="show-completed-btn" data-type="completed">Completed</button>
+                </div>
+                <button class="clear-completed-btn">Clear Completed</button>
+            </div>
+        </div>
+        <p class='info'>더블클릭 시 수정 가능!</p>
+       
+    </div>
+
+    
+    <!-- <script src="todo.js" ></script> -->
+    <script>
+    const todoInputElem = document.querySelector('.todo-input');
+    const todoListElem = document.querySelector('.todo-list');
+    const completeAllBtnElem = document.querySelector('.complete-all-btn');
+
+    const leftItemsElem = document.querySelector('.left-items')
+
+    const getActiveTodos = () => {
+        return todos.filter(todo => todo.isCompleted === false);
+    }
+
+    const setLeftItems = () => {
+        const leftTodos = getActiveTodos()
+        leftItemsElem.innerHTML = `${leftTodos.length} items left`
+    }
+
+    let todos = [];
+    let id = 0;
+
+    const setTodos = (newTodos) => {
+        todos = newTodos;
+    }
+
+    const getAllTodos = () => {
+        return todos;
+    }
+
+    const getCompletedTodos = () => {
+        return todos.filter(todo => todo.isCompleted === true );
+    }
+
+    let isAllCompleted = ''; // 전체 todos 체크 여부
+
+    const setIsAllCompleted = (bool) => { isAllCompleted = bool};
+
+    const completeAll = () => {
+        completeAllBtnElem.classList.add('checked');
+        const newTodos = getAllTodos().map(todo => ({...todo, isCompleted: true }) )
+        setTodos(newTodos)
+    }
+
+    const incompleteAll = () => {
+        completeAllBtnElem.classList.remove('checked');
+        const newTodos =  getAllTodos().map(todo => ({...todo, isCompleted: false }) );
+        setTodos(newTodos)
+    }
+
+    // 전체 todos의 check 여부 (isCompleted)
+    const checkIsAllCompleted = () => {
+        if(getAllTodos().length === getCompletedTodos().length ){
+            setIsAllCompleted(true);
+            completeAllBtnElem.classList.add('checked');
+        }else {
+            setIsAllCompleted(false);
+            completeAllBtnElem.classList.remove('checked');
+        }
+    }
+
+    const onClickCompleteAll = () => {
+        if(!getAllTodos().length) return; // todos배열의 길이가 0이면 return;
+
+        if(isAllCompleted) incompleteAll(); // isAllCompleted가 true이면 todos를 전체 미완료 처리 
+        else completeAll(); // isAllCompleted가 false이면 todos를 전체 완료 처리 
+        setIsAllCompleted(!isAllCompleted); // isAllCompleted 토글
+        paintTodos(); // 새로운 todos를 렌더링
+        setLeftItems()
+    }
+
+    const appendTodos = (text) => {
+        const newId = id++;
+        const newTodos = getAllTodos().concat({id: newId, isCompleted: false, content: text })
+        // const newTodos = [...getAllTodos(), {id: newId, isCompleted: false, content: text }]
+        setTodos(newTodos)
+        setLeftItems()
+        checkIsAllCompleted();
+        paintTodos();
+    }
+
+    const deleteTodo = (todoId) => {
+        const newTodos = getAllTodos().filter(todo => todo.id !== todoId );
+        setTodos(newTodos);
+        setLeftItems()
+        paintTodos()
+    }
+
+    const completeTodo = (todoId) => {
+        const newTodos = getAllTodos().map(todo => todo.id === todoId ? {...todo,  isCompleted: !todo.isCompleted} : todo )
+        setTodos(newTodos);
+        paintTodos();
+        setLeftItems()
+        checkIsAllCompleted();
+    }
+
+    const updateTodo = (text, todoId) => {
+        const currentTodos = getAllTodos();
+        const newTodos = currentTodos.map(todo => todo.id === todoId ? ({...todo, content: text}) : todo);
+        setTodos(newTodos);
+        paintTodos();
+    }
+
+    const onDbclickTodo = (e, todoId) => {
+        const todoElem = e.target;
+        const inputText = e.target.innerText;
+        const todoItemElem = todoElem.parentNode;
+        const inputElem = document.createElement('input');
+        inputElem.value = inputText;
+        inputElem.classList.add('edit-input');
+        inputElem.addEventListener('keypress', (e)=>{
+            if(e.key === 'Enter') {
+                updateTodo(e.target.value, todoId);
+                document.body.removeEventListener('click', onClickBody );
+            }
+        })
+
+        const onClickBody = (e) => {
+            if(e.target !== inputElem)  {
+                todoItemElem.removeChild(inputElem);
+                document.body.removeEventListener('click', onClickBody );
+            }
+        }
+        
+        document.body.addEventListener('click', onClickBody)
+        todoItemElem.appendChild(inputElem);
+    }
+
+    const paintTodos = () => {
+        todoListElem.innerHTML = null; //todoListElem 요소 안의 HTML 초기화
+        const allTodos = getAllTodos() // todos 배열 가져오기
+
+        allTodos.forEach(todo => { 
+            const todoItemElem = document.createElement('li');
+            todoItemElem.classList.add('todo-item');
+
+            todoItemElem.setAttribute('data-id', todo.id );
+
+            const checkboxElem = document.createElement('div');
+            checkboxElem.classList.add('checkbox');
+            checkboxElem.addEventListener('click', () => completeTodo(todo.id))
+        
+            const todoElem = document.createElement('div');
+            todoElem.classList.add('todo');
+            todoElem.addEventListener('dblclick', (event) => onDbclickTodo(event, todo.id))
+            todoElem.innerText = todo.content;
+        
+            const delBtnElem = document.createElement('button');
+            delBtnElem.classList.add('delBtn');
+            delBtnElem.addEventListener('click', () =>  deleteTodo(todo.id))
+            delBtnElem.innerHTML = 'X';
+
+            if(todo.isCompleted) {
+                todoItemElem.classList.add('checked');
+                checkboxElem.innerText = '✔';
+            }
+
+            todoItemElem.appendChild(checkboxElem);
+            todoItemElem.appendChild(todoElem);
+            todoItemElem.appendChild(delBtnElem);
+
+            todoListElem.appendChild(todoItemElem);
+        })
+    }
+
+    // 로드되면 초기화.
+    const init = () => {
+        todoInputElem.addEventListener('keypress', (e) =>{
+            if( e.key === 'Enter' ){
+                appendTodos(e.target.value); todoInputElem.value ='';
+            }
+        })
+
+        completeAllBtnElem.addEventListener('click',  onClickCompleteAll)
+
+        setLeftItems()
+    }
+
+    init()
+
+    const bodyEl = document.querySelector("body");
+    const darkMode = document.querySelector(".darkMode");
+    const title = document.querySelector(".todo-title");
+    const todobox = document.querySelector(".todo-box");
+
+    // 초기 상태를 라이트 모드로 설정
+    let isDarkMode = false;
+
+    darkMode.addEventListener('click', () => {
+        if (!isDarkMode) {
+            // 다크 모드 활성화
+            bodyEl.style.backgroundColor = "#000";
+            bodyEl.style.color = "#fff";
+            title.style.color = "#fff";
+            isDarkMode = true; // 상태 업데이트
+        } else {
+            // 라이트 모드 활성화
+            bodyEl.style.backgroundColor = "#fff";
+            bodyEl.style.color = "#000";
+            title.style.color = "#000";
+            isDarkMode = false; // 상태 업데이트
+        }
+    });
+
+    </script>
+</body>
+</html>

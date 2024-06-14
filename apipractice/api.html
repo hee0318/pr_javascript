@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>api 연습</title>
+</head>
+<body>
+    <header>
+        <h1>서울시 동대문구 요양병원 리스트</h1>
+    </header>
+    <main>
+
+    </main>
+
+    <script>
+    fetch("https://api.odcloud.kr/api/15037455/v1/uddi:1024dbb2-0925-4446-bfcd-8e170389bb82?page=1&perPage=10&returnType=JSON&serviceKey=lswlMs3tmgMTx7SwfkU6CtwFGDPk28GfakHb5fJqD%2BmTsC8%2FHDGNdhDP9h6X3qS72089h%2BCqEdHdmRPCaxjGyg%3D%3D")
+        .then((response) => response.json())
+        .then((data) => {
+        const hospitals = data.data; 
+        const mainElement = document.querySelector('main'); 
+        hospitals.forEach((hospital, index) => {
+            const hospitalDiv = document.createElement('div'); 
+            hospitalDiv.className = 'hospital'; 
+            hospitalDiv.innerHTML = `<div>병원명: ${hospital.시설명}</div>`;
+            mainElement.appendChild(hospitalDiv);
+        });
+    })
+    </script>
+</body>
+</html>
